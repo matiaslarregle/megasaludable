@@ -302,4 +302,4 @@ logo_img = mpimg.imread(logo_path)
 ax20.imshow(logo_img)
 
 plt.tight_layout()
-plt.show()
+st.pyplot(fig)
