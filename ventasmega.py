@@ -4,19 +4,21 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import seaborn as sns
 
-# --- Cargar datos ---
 df = pd.read_csv("megasaludableventas.csv")
 df['Fecha'] = pd.to_datetime(df['Fecha'])
 
 st.title("Dashboard de Ventas Megasaludable")
 
-# --- Obtener los meses disponibles en el DataFrame ---
+ultima_fecha = df['Fecha'].max().strftime("%d/%m/%Y")
+st.info(f"Los datos están actualizados hasta el día {ultima_fecha}.")
+st.info("Solo facturas de clientes no registrados")
+
 df['Mes'] = df['Fecha'].dt.to_period('M')  # columna con formato YYYY-MM
 meses_disponibles = df['Mes'].sort_values().unique().astype(str)  # lista de meses únicos
 
 # --- Selección de meses ---
 mes_seleccionados = st.sidebar.multiselect(
-    "Selecciona los meses para análisis:",
+    "Filtrá por mes:",
     options=meses_disponibles,
     default=[meses_disponibles[-1]]  # opcional: selecciona el último mes por defecto
 )
