@@ -10,26 +10,23 @@ df['Fecha'] = pd.to_datetime(df['Fecha'])
 
 st.title("Dashboard de Ventas Megasaludable")
 
-# --- Selección de mes o rango de meses ---
-st.sidebar.header("Filtros")
-opcion_filtro = st.sidebar.radio("Selecciona tipo de filtro:", ["Mes", "Rango de meses"])
+# --- Obtener los meses disponibles en el DataFrame ---
+df['Mes'] = df['Fecha'].dt.to_period('M')  # columna con formato YYYY-MM
+meses_disponibles = df['Mes'].sort_values().unique().astype(str)  # lista de meses únicos
 
-if opcion_filtro == "Mes":
-    mes_seleccionado = st.sidebar.text_input("Mes (YYYY-MM)", "2025-06")
-    df_mes = df[df['Fecha'].dt.to_period('M') == mes_seleccionado]
+# --- Selección de meses ---
+mes_seleccionados = st.sidebar.multiselect(
+    "Selecciona los meses para análisis:",
+    options=meses_disponibles,
+    default=[meses_disponibles[-1]]  # opcional: selecciona el último mes por defecto
+)
+
+# --- Filtrar DataFrame según los meses seleccionados ---
+if mes_seleccionados:
+    df_mes = df[df['Mes'].astype(str).isin(mes_seleccionados)]
 else:
-    rango_meses = st.sidebar.date_input("Rango de fechas", [])
-    if len(rango_meses) == 2:
-        inicio, fin = rango_meses
-        df_mes = df[(df['Fecha'] >= pd.to_datetime(inicio)) & (df['Fecha'] <= pd.to_datetime(fin))]
-    else:
-        st.warning("Selecciona un rango de dos fechas")
-        st.stop()
-
-if df_mes.empty:
-    st.warning("No hay datos para el mes o rango seleccionado")
+    st.warning("Selecciona al menos un mes")
     st.stop()
-
 # ---- AGRUPAR Y TOMAR TOP 10 ----
 top_cantidad = (
     df_mes.groupby('Descripcion')['Cantidad']
