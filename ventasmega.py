@@ -13,17 +13,15 @@ ultima_fecha = df['Fecha'].max().strftime("%d/%m/%Y")
 st.caption(f"Los datos están actualizados hasta el día {ultima_fecha}.")
 st.caption("Solo facturas de clientes no registrados")
 
-df['Mes'] = df['Fecha'].dt.to_period('M')  # columna con formato YYYY-MM
-meses_disponibles = df['Mes'].sort_values().unique().astype(str)  # lista de meses únicos
+df['Mes'] = df['Fecha'].dt.to_period('M')  
+meses_disponibles = df['Mes'].sort_values().unique().astype(str) 
 
-# --- Selección de meses ---
 mes_seleccionados = st.sidebar.multiselect(
     "Filtrá por mes:",
     options=meses_disponibles,
-    default=[meses_disponibles[-1]]  # opcional: selecciona el último mes por defecto
+    default=[meses_disponibles[-1]] 
 )
 
-# --- Filtrar DataFrame según los meses seleccionados ---
 if mes_seleccionados:
     df_mes = df[df['Mes'].astype(str).isin(mes_seleccionados)]
 else:
@@ -81,7 +79,6 @@ ax4.set_title('[0,4:5]')
 ax5 = fig.add_subplot(gs[:2,5:])
 ax5.clear()
 
-# Usar el DataFrame filtrado por mes
 df_dia = df_mes.groupby('Fecha').agg({'Total': 'sum'}).reset_index()
 df_dia['Día'] = df_dia['Fecha'].dt.day
 
@@ -112,7 +109,6 @@ sns.heatmap(
     cbar=False
 )
 
-# Quitar etiquetas de los ejes
 ax5.set_xlabel("")
 ax5.set_ylabel("")
 ax5.set_title(f"Promedio por Día y Tramo del Mes", fontsize=12, fontweight='bold')
@@ -134,13 +130,10 @@ colors = [color_map[dia] for dia in dias_semana]
 ax7.clear()
 ax7.set_title(f'Ventas diarias', fontsize=16, fontweight='bold')
 
-# Línea de ventas general
 ax7.plot(ventas_por_fecha.index, ventas_por_fecha.values, color='lightgray', alpha=0.6, zorder=1)
 
-# Puntos de ventas
 ax7.scatter(ventas_por_fecha.index, ventas_por_fecha.values, color=colors, s=80, zorder=3)
 
-# Media móvil 7 días
 ventas_suavizadas = ventas_por_fecha.rolling(window=7, center=True, min_periods=1).mean()
 mm_line, = ax7.plot(
     ventas_suavizadas.index,
@@ -151,11 +144,9 @@ mm_line, = ax7.plot(
     label='Media móvil (7 días)'
 )
 
-# Etiquetas de días
 for x, y, dia in zip(ventas_por_fecha.index, ventas_por_fecha.values, dias_semana):
     ax7.text(x, y + max(ventas_por_fecha.values)*0.05, dia, fontsize=8, ha='center', va='bottom', color='black')
 
-# Feriados
 feriados = pd.to_datetime([
     '2025-03-03', '2025-03-04', '2025-03-24',
     '2025-04-02', '2025-04-18', '2025-05-01', '2025-05-25',
@@ -170,7 +161,6 @@ if feriados_mes:
             fecha, color='darkblue', linestyle='--', alpha=0.3, zorder=0, label='Feriado'
         )
 
-# Puntos de ventas muy bajas
 umbral_bajo = ventas_por_fecha.mean() * 0.5
 puntos_bajos = ventas_por_fecha[ventas_por_fecha < umbral_bajo]
 for x, y in puntos_bajos.items():
@@ -180,13 +170,11 @@ for x, y in puntos_bajos.items():
     ax7.text(x, y - max(ventas_por_fecha.values)*0.06, f"${int(y):,}",
             fontsize=8, ha='center', va='top', color='darkred', fontweight='bold')
 
-# Quitar ejes y ticks
 ax7.set_xlabel("")
 ax7.set_ylabel("")
 ax7.set_xticks([])
 ax7.set_yticks([])
 
-# Leyenda dinámica
 if feriado_line:
     ax7.legend([mm_line, feriado_line], ['Media móvil (7 días)', 'Feriado'], fontsize=6, loc='lower left')
 else:
