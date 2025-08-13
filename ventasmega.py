@@ -27,7 +27,7 @@ if mes_seleccionados:
 else:
     st.warning("Selecciona al menos un mes")
     st.stop()
-# ---- AGRUPAR Y TOMAR TOP 10 ----
+
 top_cantidad = (
     df_mes.groupby('Descripcion')['Cantidad']
     .sum()
@@ -36,7 +36,6 @@ top_cantidad = (
     .reset_index()
 )
 
-# Calcular top ingresos filtrado
 top_ingresos = (
     df_mes.groupby('Descripcion')['Total']
     .sum()
