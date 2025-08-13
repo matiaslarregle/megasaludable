@@ -10,8 +10,8 @@ df['Fecha'] = pd.to_datetime(df['Fecha'])
 st.title("Dashboard de Ventas Megasaludable")
 
 ultima_fecha = df['Fecha'].max().strftime("%d/%m/%Y")
-st.info(f"Los datos están actualizados hasta el día {ultima_fecha}.")
-st.info("Solo facturas de clientes no registrados")
+st.caption(f"Los datos están actualizados hasta el día {ultima_fecha}.")
+st.caption("Solo facturas de clientes no registrados")
 
 df['Mes'] = df['Fecha'].dt.to_period('M')  # columna con formato YYYY-MM
 meses_disponibles = df['Mes'].sort_values().unique().astype(str)  # lista de meses únicos
