@@ -120,9 +120,6 @@ ax5.set_title(f"Promedio por Día y Tramo del Mes", fontsize=12, fontweight='bol
 
 ax7 = fig.add_subplot(gs[1:4,2:5])
 
-df['Fecha'] = pd.to_datetime(df['Fecha'])
-mes_seleccionado = "2025-06"
-df_mes = df[df['Fecha'].dt.to_period('M') == mes_seleccionado]
 ventas_por_fecha = df_mes.groupby('Fecha')['Total'].sum().sort_index()
 
 dias_semana_en = [fecha.strftime('%a') for fecha in ventas_por_fecha.index]
